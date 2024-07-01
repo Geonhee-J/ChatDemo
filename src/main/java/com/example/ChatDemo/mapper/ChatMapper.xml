@@ -1,3 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.ChatDemo.mapper.ChatMapper"></mapper>
+<mapper namespace="com.example.ChatDemo.mapper.ChatMapper">
+
+	<insert id="save" parameterType="com.example.ChatDemo.dto.ChatDto">
+		INSERT INTO chat_messages (
+			room_id, sender, content, timestamp
+		) VALUES (
+		#{roomId}, #{sender}, #{content}, #{timestamp})
+	</insert>
+
+	<select id="findByRoomId" parameterType="String" resultType="com.example.ChatDemo.dto.ChatDto">
+		SELECT *
+		FROM chat
+		WHERE room_id = #{roomId}
+		ORDER BY timestamp
+	</select>
+
+</mapper>
