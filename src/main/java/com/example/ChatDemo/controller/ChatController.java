@@ -34,7 +34,7 @@ public class ChatController {
     @MessageMapping("/chat.addUser")
     public void addUser(@Payload ChatDto chatMessage, SimpMessageHeaderAccessor headerAccessor) {
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-        chatMessage.setContent("User joined: " + chatMessage.getSender());
+        // chatMessage.setContent("User joined: " + chatMessage.getSender());
         chatService.saveMessage(chatMessage);
         simpMessagingTemplate.convertAndSend("/topic/" + chatMessage.getRoomId(), chatMessage);
     }

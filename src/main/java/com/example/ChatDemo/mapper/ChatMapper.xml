@@ -11,7 +11,7 @@
 
 	<select id="findByRoomId" parameterType="String" resultType="com.example.ChatDemo.dto.ChatDto">
 		SELECT *
-		FROM chat
+		FROM chat_messages
 		WHERE room_id = #{roomId}
 		ORDER BY timestamp
 	</select>

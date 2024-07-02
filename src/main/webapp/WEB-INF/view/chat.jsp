@@ -10,6 +10,11 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+	<div>
+    	<input type="text" id="userName" placeholder="Make a user name">
+    	<button onclick="makeUserName()">Submit</button>
+    </div>
+    <br>
 	<div id="chat">
         <input type="text" id="roomIdInput" placeholder="Enter room ID"/>
         <button onclick="joinRoom()">Join Room</button>
@@ -21,15 +26,23 @@
 	<script>
         var stompClient = null;
         var currentRoomId = null;
+        var userName = 'User';
+        
+        // 직접 입력한 닉네임 적용하기
+        function makeUserName() {
+        	userName = $('#userName').val().trim();
+        	// console.log(userName);
+        }
 
         function connect() {
             var socket = new SockJS('/ws');
             stompClient = Stomp.over(socket);
+            // console.log('stompClient -> ', stompClient);
             stompClient.connect({}, onConnected, onError);
         }
 
         function onConnected() {
-            console.log('Connected');
+            // console.log('Connected');
         }
 
         function onError(error) {
@@ -44,13 +57,14 @@
                 }
                 currentRoomId = roomId;
                 stompClient.subscribe('/topic/' + roomId, onMessageReceived);
-                stompClient.send("/app/chat.addUser", {}, JSON.stringify({sender: 'User', type: 'JOIN', roomId: roomId}));
+                stompClient.send("/app/chat.addUser", {}, JSON.stringify({sender: userName, type: 'JOIN', roomId: roomId}));
                 loadChatHistory(roomId);
             }
         }
 
         function loadChatHistory(roomId) {
             $.get("/chat/history/" + roomId, function(data) {
+            	console.log("data:", data);
                 $('#messageArea').empty();
                 data.forEach(function(message) {
                     var messageElement = $('<div/>').text(message.sender + ": " + message.content);
@@ -62,8 +76,9 @@
         function sendMessage() {
             var messageContent = $('#messageInput').val().trim();
             if (messageContent && stompClient) {
+            	console.log('mc:', messageContent);
                 var chatMessage = {
-                    sender: 'User',
+                    sender: userName,
                     content: messageContent,
                     type: 'CHAT',
                     roomId: currentRoomId
