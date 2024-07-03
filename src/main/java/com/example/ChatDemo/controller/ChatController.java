@@ -11,11 +11,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ChatDemo.dto.ChatDto;
 import com.example.ChatDemo.service.ChatService;
 
-@Controller
+@RestController
 public class ChatController {
 
 	@Autowired
@@ -34,14 +35,17 @@ public class ChatController {
     @MessageMapping("/chat.addUser")
     public void addUser(@Payload ChatDto chatMessage, SimpMessageHeaderAccessor headerAccessor) {
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-        // chatMessage.setContent("User joined: " + chatMessage.getSender());
+        chatMessage.setContent("User joined: " + chatMessage.getSender());
         chatService.saveMessage(chatMessage);
         simpMessagingTemplate.convertAndSend("/topic/" + chatMessage.getRoomId(), chatMessage);
     }
 
     @GetMapping("/chat/history/{roomId}")
-    public List<ChatDto> getChatHistory(@PathVariable String roomId) {
-        return chatService.getMessagesByRoomId(roomId);
+    public List<ChatDto> getChatHistory(@PathVariable(name = "roomId") String roomId) {
+    	System.out.println("chk: " + roomId);
+    	List<ChatDto> chatHistory = chatService.getMessagesByRoomId(roomId);
+    	System.out.println("chk: " + chatHistory);
+        return chatHistory;
     }
 	
 	@GetMapping("/chat")

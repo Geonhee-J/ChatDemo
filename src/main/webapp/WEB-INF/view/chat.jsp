@@ -62,21 +62,37 @@
             }
         }
 
+        /*
+        	@Controller 요청을 받게되면
+        	Spring MVC에서 요청을 처리할 때
+        	뷰 리졸버가 해당 경로에 jsp 파일을 찾으려고 시도함
+        	
+        	@RestController 사용해야
+        	HTTP통신으로 JSON 응답을 받을 수 있음
+        */
         function loadChatHistory(roomId) {
-            $.get("/chat/history/" + roomId, function(data) {
-            	console.log("data:", data);
-                $('#messageArea').empty();
-                data.forEach(function(message) {
-                    var messageElement = $('<div/>').text(message.sender + ": " + message.content);
-                    $('#messageArea').append(messageElement);
-                });
+        	console.log(roomId);
+            $.ajax({
+            	type: "GET",
+            	url: "/chat/history/" + roomId,
+            	success: function(data) {
+            		console.log(data);
+                	$('#messageArea').empty();
+                	data.forEach(function(message) {
+                    	var messageElement = $('<div/>').text(message.sender + ": " + message.content);
+                    	$('#messageArea').append(messageElement);
+                    	console.log('messageEle:', messageElement);
+                	});
+            	},
+            	error: function(error) {
+            		console.log("Error loading chat history:", error);
+            	}
             });
         }
 
         function sendMessage() {
             var messageContent = $('#messageInput').val().trim();
             if (messageContent && stompClient) {
-            	console.log('mc:', messageContent);
                 var chatMessage = {
                     sender: userName,
                     content: messageContent,

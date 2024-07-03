@@ -23,6 +23,7 @@ public class ChatService implements ChatServiceImpl {
 
     @Override
     public List<ChatDto> getMessagesByRoomId(String roomId) {
+    	System.out.println("service chk: " + roomId);
         return chatMapper.findByRoomId(roomId);
     }
 }
